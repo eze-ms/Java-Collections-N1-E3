@@ -1,4 +1,6 @@
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,16 +20,17 @@ public class Game {
     }
 
     private void loadCountries(String filePath) {
-        try (Scanner fileScanner = new Scanner(new File(filePath))) {
-            while (fileScanner.hasNextLine()) {
-                String line = fileScanner.nextLine().trim();
-                if (line.isEmpty()) {
-                    continue;
-                }
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty()) continue;
+
                 String[] parts = line.split(" ");
                 if (parts.length == 2) {
                     String country = parts[0].trim();
                     String capital = parts[1].trim();
+
                     countriesMap.put(country, capital);
                 } else {
                     System.out.println("Formato incorrecto en la línea: " + line);
@@ -62,12 +65,13 @@ public class Game {
         }
 
         System.out.println("\nJuego terminado, " + userName + ". Tu puntuación final es: " + score + " de 10.");
-        guardarPuntuacion(userName, score); // Llamada al método de guardado
+        guardarPuntuacion(userName, score);
     }
 
     private void guardarPuntuacion(String userName, int score) {
         var archivo = new File("classificacio.txt");
-        try (var salida = new PrintWriter(new FileWriter(archivo, true))) { // Modo append
+
+        try (var salida = new PrintWriter(new FileWriter(archivo, true))) {
             salida.println(userName + ": " + score + " puntos");
             System.out.println("Puntuación guardada en classificacio.txt.");
         } catch (IOException e) {
